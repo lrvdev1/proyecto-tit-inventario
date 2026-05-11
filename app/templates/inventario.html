@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Inventario Actual</h2>
+<table>
+    <thead>
+        <tr><th>Producto</th><th>SKU</th><th>Tipo</th><th>Lote</th><th>Vencimiento</th><th>Stock</th></tr>
+    </thead>
+    <tbody>
+        {% for lote in lotes %}
+        <tr>
+            <td>{{ lote.producto.nombre if lote.producto else 'N/A' }}</td>
+            <td>{{ lote.producto.sku if lote.producto else 'N/A' }}</td>
+            <td>{{ lote.producto.tipo if lote.producto else 'N/A' }}</td>
+            <td>{{ lote.numero_lote }}</td>
+            <td>{{ lote.fecha_vencimiento }}</td>
+            <td>{{ lote.stock_actual }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Registrar Movimiento</h2>
+<div style="max-width: 500px; background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
+    <form method="POST">
+        <div style="margin-bottom: 15px;">
+            <label>Tipo de movimiento</label>
+            <select name="tipo" required style="width: 100%; padding: 8px;">
+                <option value="entrada">📥 Entrada (Compra a proveedor)</option>
+                <option value="salida">📤 Salida (Venta)</option>
+                <option value="reposicion">🔄 Reposición (Traslado a stand)</option>
+            </select>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Lote</label>
+            <select name="lote_id" required style="width: 100%; padding: 8px;">
+                {% for lote in lotes %}
+                    <option value="{{ lote.id }}">
+                        {{ lote.producto.nombre if lote.producto else 'Sin producto' }} - 
+                        Lote: {{ lote.numero_lote }} - Stock: {{ lote.stock_actual }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Cantidad</label>
+            <input type="number" name="cantidad" min="1" required style="width: 100%; padding: 8px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Comentario (opcional)</label>
+            <textarea name="comentario" rows="3" style="width: 100%; padding: 8px;"></textarea>
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">✅ Registrar Movimiento</button>
+    </form>
+</div>
+{% endblock %}

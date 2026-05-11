@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:15
+    container_name: nup_db
+    environment:
+      POSTGRES_USER: nup_user
+      POSTGRES_PASSWORD: nup_password
+      POSTGRES_DB: nup_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nup_user -d nup_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: nup_app
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://nup_user:nup_password@db:5432/nup_db
+    volumes:
+      - ./app:/app
+
+volumes:
+  postgres_data:

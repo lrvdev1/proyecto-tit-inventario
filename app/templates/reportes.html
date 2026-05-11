@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="color: #2C3E50;">📊 Reportes Analíticos</h2>
+<p>Indicadores clave para la toma de decisiones.</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+    
+    <div style="background: #ecf0f1; padding: 20px; border-radius: 8px;">
+        <h3>🏆 Producto más vendido del mes</h3>
+        {% if mas_vendido %}
+            <p><strong>{{ mas_vendido.nombre }}</strong></p>
+            <p>Total vendido: {{ mas_vendido.total }} unidades</p>
+        {% else %}
+            <p>No hay ventas registradas este mes</p>
+        {% endif %}
+    </div>
+    
+    <div style="background: #ecf0f1; padding: 20px; border-radius: 8px;">
+        <h3>⚠️ Proyección de quiebre de stock</h3>
+        <p>Función en desarrollo</p>
+        <p>Se calculará con el promedio de ventas diarias</p>
+    </div>
+    
+    <div style="background: #ecf0f1; padding: 20px; border-radius: 8px;">
+        <h3>💸 Pérdidas por vencimiento</h3>
+        {% if perdidas %}
+            <ul>
+            {% for p in perdidas %}
+                <li>{{ p.nombre }}: {{ p.total }} unidades vencidas</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay productos vencidos</p>
+        {% endif %}
+    </div>
+    
+</div>
+
+<p style="margin-top: 20px; font-size: 0.9rem; color: #7f8c8d;">
+    📌 Los reportes se actualizan automáticamente con los movimientos registrados.
+</p>
+{% endblock %}
