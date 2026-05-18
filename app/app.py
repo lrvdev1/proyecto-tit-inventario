@@ -6,7 +6,19 @@ import os
 
 app = Flask(__name__)
 app.secret_key = 'clave-secreta-nup-2026'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://nup_user:nup_password@db:5432/nup_db'
+
+# ==================== CONFIGURACIÓN DE BASE DE DATOS ====================
+# Usar DATABASE_URL de Render
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith('postgres://'):
+    # Render postgres://
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+if not database_url:
+    # Fallback a SQLite para desarrollo local
+    database_url = 'sqlite:///nup.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.permanent_session_lifetime = timedelta(minutes=30)
 
@@ -214,13 +226,32 @@ def reportes():
                           usuario=session)
 
 
+# ==================== INICIALIZACIÓN ====================
 if __name__ == '__main__':
     with app.app_context():
+        # Crear todas las tablas
         db.create_all()
+        
+        # Crear usuario administrador si no existe
         if not Usuario.query.filter_by(email='admin@nup.cl').first():
             hashed = bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt())
-            admin = Usuario(nombre='Administrador', email='admin@nup.cl', password_hash=hashed.decode('utf-8'), rol='administrador', activo=True)
+            admin = Usuario(nombre='Administrador', email='admin@nup.cl', 
+                          password_hash=hashed.decode('utf-8'), 
+                          rol='administrador', activo=True)
             db.session.add(admin)
             db.session.commit()
-            print("Usuario admin creado: admin@nup.cl / admin123")
+            print("✅ Usuario admin creado: admin@nup.cl / admin123")
+        
+        # Crear usuario vendedor si no existe
+        if not Usuario.query.filter_by(email='vendedor@nup.cl').first():
+            hashed = bcrypt.hashpw('ventas123'.encode('utf-8'), bcrypt.gensalt())
+            vendedor = Usuario(nombre='Vendedor NUP', email='vendedor@nup.cl', 
+                             password_hash=hashed.decode('utf-8'), 
+                             rol='vendedor', activo=True)
+            db.session.add(vendedor)
+            db.session.commit()
+            print("✅ Usuario vendedor creado: vendedor@nup.cl / ventas123")
+        
+        print("✅ Base de datos inicializada correctamente")
+    
     app.run(host='0.0.0.0', debug=True)
