@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: nup-inventario
+    runtime: python
+    repo: https://github.com/lrvdev1/proyecto-tit-inventario
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+
+  - type: postgresql
+    name: nup-db
+    plan: free
